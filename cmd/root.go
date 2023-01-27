@@ -18,14 +18,66 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 package cmd
 
 import (
+	"crypto/ecdsa"
+	"crypto/x509"
+	"encoding/pem"
+	"fmt"
+	"io/ioutil"
 	"os"
 
 	"github.com/spf13/cobra"
 )
 
+var (
+	argKeyId    string
+	argIssuerId string
+	argKeyPath  string
+	argBundleId string
+
+	privateKey *ecdsa.PrivateKey
+)
+
 var rootCmd = &cobra.Command{
 	Use:   "app-store-connect-cli",
 	Short: "A simple CLI tool to interact with the App Store Connect API",
+	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		errMissingRequiredArgument := fmt.Errorf("missing required arguments: key-id, issuer-id, private-key, and bundle-id are required")
+		if argKeyId == "" {
+			return errMissingRequiredArgument
+		}
+		if argIssuerId == "" {
+			return errMissingRequiredArgument
+		}
+		if argKeyPath == "" {
+			return errMissingRequiredArgument
+		}
+		if argBundleId == "" {
+			return errMissingRequiredArgument
+		}
+
+		p8Bytes, err := ioutil.ReadFile(argKeyPath)
+		if err != nil {
+			return fmt.Errorf("unable to read private key file: %w", err)
+		}
+
+		block, _ := pem.Decode(p8Bytes)
+		if block == nil || block.Type != "PRIVATE KEY" {
+			return fmt.Errorf("failed to decode PEM block containing private key")
+		}
+
+		parsedKey, err := x509.ParsePKCS8PrivateKey(block.Bytes)
+		if err != nil {
+			return fmt.Errorf("failed to parse private key: %w", err)
+		}
+
+		ecdsaPrivateKey, ok := parsedKey.(*ecdsa.PrivateKey)
+		if !ok {
+			return fmt.Errorf("private key is not an ECDSA private key")
+		}
+		privateKey = ecdsaPrivateKey
+
+		return nil
+	},
 }
 
 func Execute() {
@@ -36,5 +88,8 @@ func Execute() {
 }
 
 func init() {
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.app-store-connect-cli.yaml)")
+	rootCmd.PersistentFlags().StringVar(&argKeyId, "key-id", "", "The key ID of the API key")
+	rootCmd.PersistentFlags().StringVar(&argIssuerId, "issuer-id", "", "The issuer ID of the API key")
+	rootCmd.PersistentFlags().StringVar(&argKeyPath, "private-key", "", "The path to the private key file")
+	rootCmd.PersistentFlags().StringVar(&argBundleId, "bundle-id", "", "The bundle ID of the application")
 }

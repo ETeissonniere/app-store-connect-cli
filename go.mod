@@ -2,7 +2,10 @@ module github.com/eteissonniere/app-store-connect-cli
 
 go 1.19
 
-require github.com/spf13/cobra v1.6.1
+require (
+	github.com/golang-jwt/jwt/v4 v4.4.3
+	github.com/spf13/cobra v1.6.1
+)
 
 require (
 	github.com/inconshreveable/mousetrap v1.0.1 // indirect
