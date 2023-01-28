@@ -48,6 +48,8 @@ func GenerateJWT(issuerId, bundleId, keyId string, privateKey *ecdsa.PrivateKey)
 			BundleId: bundleId,
 		},
 	)
+	token.Header["alg"] = "ES256"
+	token.Header["typ"] = "JWT"
 	token.Header["kid"] = keyId
 
 	signed, err := token.SignedString(privateKey)
