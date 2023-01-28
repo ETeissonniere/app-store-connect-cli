@@ -11,6 +11,7 @@ import (
 // and offer QoL methods for making requests.
 type Client struct {
 	*http.Client
+	config ClientConfig
 }
 
 // Metadata necessary to authenticate with the App Store Connect API.
@@ -19,6 +20,7 @@ type ClientConfig struct {
 	BundleId   string
 	KeyId      string
 	PrivateKey *ecdsa.PrivateKey
+	UseSandbox bool
 }
 
 type transport struct {

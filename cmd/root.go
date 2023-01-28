@@ -25,16 +25,19 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/eteissonniere/app-store-connect-cli/client"
+
 	"github.com/spf13/cobra"
 )
 
 var (
-	argKeyId    string
-	argIssuerId string
-	argKeyPath  string
-	argBundleId string
+	argKeyId      string
+	argIssuerId   string
+	argKeyPath    string
+	argBundleId   string
+	argUseSandbox bool
 
-	privateKey *ecdsa.PrivateKey
+	apiClient *client.Client
 )
 
 var rootCmd = &cobra.Command{
@@ -74,7 +77,13 @@ var rootCmd = &cobra.Command{
 		if !ok {
 			return fmt.Errorf("private key is not an ECDSA private key")
 		}
-		privateKey = ecdsaPrivateKey
+		apiClient = client.New(client.ClientConfig{
+			IssuerId:   argIssuerId,
+			BundleId:   argBundleId,
+			KeyId:      argKeyId,
+			PrivateKey: ecdsaPrivateKey,
+			UseSandbox: argUseSandbox,
+		})
 
 		return nil
 	},
@@ -92,4 +101,5 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&argIssuerId, "issuer-id", "", "The issuer ID of the API key")
 	rootCmd.PersistentFlags().StringVar(&argKeyPath, "private-key", "", "The path to the private key file")
 	rootCmd.PersistentFlags().StringVar(&argBundleId, "bundle-id", "", "The bundle ID of the application")
+	rootCmd.PersistentFlags().BoolVar(&argUseSandbox, "use-sandbox", false, "Use the sandbox environment")
 }

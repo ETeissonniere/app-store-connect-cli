@@ -19,6 +19,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -27,7 +28,12 @@ var requestTestNotificationCmd = &cobra.Command{
 	Use:   "requestTestNotification",
 	Short: "Request a test server to server notification for your application",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("requestTestNotification called")
+		if err := apiClient.RequestTestNotification(); err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
+		fmt.Println("Test notification sent")
 	},
 }
 
