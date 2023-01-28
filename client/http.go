@@ -39,7 +39,7 @@ func (t *transport) RoundTrip(r *http.Request) (*http.Response, error) {
 		Str("jwt", jwt).
 		Msg("Roundtripping... JWT generated")
 
-	r.Header.Set("Auth", "Authorization: Bearer "+jwt)
+	r.Header.Set("Authorization", "Bearer "+jwt)
 	return t.rt.RoundTrip(r)
 }
 
