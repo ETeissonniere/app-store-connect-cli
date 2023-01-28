@@ -27,6 +27,8 @@ import (
 
 	"github.com/eteissonniere/app-store-connect-cli/client"
 
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
 
@@ -85,11 +87,22 @@ var rootCmd = &cobra.Command{
 			UseSandbox: argUseSandbox,
 		})
 
+		log.Debug().
+			Str("key-id", argKeyId).
+			Str("issuer-id", argIssuerId).
+			Str("bundle-id", argBundleId).
+			Str("private-key", argKeyPath).
+			Bool("use-sandbox", argUseSandbox).
+			Msg("API client initialized")
+
 		return nil
 	},
 }
 
 func Execute() {
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+
 	err := rootCmd.Execute()
 	if err != nil {
 		os.Exit(1)

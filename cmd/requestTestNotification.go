@@ -18,9 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 package cmd
 
 import (
-	"fmt"
-	"os"
-
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
 
@@ -29,11 +27,10 @@ var requestTestNotificationCmd = &cobra.Command{
 	Short: "Request a test server to server notification for your application",
 	Run: func(cmd *cobra.Command, args []string) {
 		if err := apiClient.RequestTestNotification(); err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			log.Fatal().Err(err).Msg("Failed to send test notification")
 		}
 
-		fmt.Println("Test notification sent")
+		log.Info().Msg("Test notification sent")
 	},
 }
 

@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"github.com/eteissonniere/app-store-connect-cli/helpers"
+
+	"github.com/rs/zerolog/log"
 )
 
 // A wrapper on `*http.Client` which adds the required headers for the App Store Connect API
@@ -33,6 +35,10 @@ func (t *transport) RoundTrip(r *http.Request) (*http.Response, error) {
 	if err != nil {
 		return nil, err
 	}
+	log.Debug().
+		Str("jwt", jwt).
+		Msg("Roundtripping... JWT generated")
+
 	r.Header.Set("Auth", "Authorization: Bearer "+jwt)
 	return t.rt.RoundTrip(r)
 }
