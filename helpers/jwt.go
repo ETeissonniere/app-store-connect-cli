@@ -41,7 +41,7 @@ func GenerateJWT(issuerId, bundleId, keyId string, privateKey *ecdsa.PrivateKey)
 		appleClaims{
 			RegisteredClaims: jwt.RegisteredClaims{
 				Issuer:    issuerId,
-				IssuedAt:  jwt.NewNumericDate(time.Now()),
+				IssuedAt:  jwt.NewNumericDate(time.Now().Add(-1 * time.Minute)),
 				ExpiresAt: jwt.NewNumericDate(time.Now().Add(20 * time.Minute)),
 				Audience:  appleAudienceClaim,
 			},

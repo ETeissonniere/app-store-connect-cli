@@ -26,11 +26,17 @@ var requestTestNotificationCmd = &cobra.Command{
 	Use:   "requestTestNotification",
 	Short: "Request a test server to server notification for your application",
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := apiClient.RequestTestNotification(); err != nil {
-			log.Fatal().Err(err).Msg("Failed to send test notification")
+		message, err := apiClient.RequestTestNotification()
+		if err != nil {
+			log.Fatal().
+				Err(err).
+				Str("body", message).
+				Msg("Failed to send test notification")
 		}
 
-		log.Info().Msg("Test notification sent")
+		log.Info().
+			Str("body", message).
+			Msg("Test notification sent")
 	},
 }
 
